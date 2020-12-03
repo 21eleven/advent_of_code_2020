@@ -41,10 +41,10 @@ pub fn solve_part1_v2(input: &[u32]) -> u32 {
 
 #[aoc(day1, part2)]
 pub fn p2(input: &[u32]) -> u32 {
-    let N = input.len();
-    for i in 0..N - 2 {
-        for j in i + 1..N - 1 {
-            for k in j + 1..N {
+    let n = input.len();
+    for i in 0..n - 2 {
+        for j in i + 1..n - 1 {
+            for k in j + 1..n {
                 let x = input[i] + input[j] + input[k];
                 if x == 2020 {
                     return input[i] * input[j] * input[k];
