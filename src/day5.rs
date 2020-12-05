@@ -6,7 +6,7 @@ use nom::IResult;
 
 const NEWLINE: char = '\n';
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug)]
 pub struct BoardingPass {
     row: u32,
     col: u32,
@@ -35,15 +35,15 @@ pub fn input_generator(input: &str) -> Vec<BoardingPass> {
     passes
 }
 
-// #aoc_generator(day5, part2)]
-// pub fn input_generator2(input: &str) -> Vec<BoardingPass> {
-//     let (_, passes) = many1(parse_boarding_pass)(input).unwrap();
-//     passes
-// }
+#[aoc_generator(day5, part2)]
+pub fn input_generator2(input: &str) -> Vec<BoardingPass> {
+    let (_, passes) = many1(parse_boarding_pass)(input).unwrap();
+    passes
+}
 
 #[aoc(day5, part1)]
 pub fn p1(input: &[BoardingPass]) -> u32 {
-   input.iter().map(|x| x.id()).max().unwrap()//.fold(0, |a,b| std::cmp::max(a,b)) 
+   input.iter().map(|x| x.id()).max().unwrap()
 }
 
 #[aoc(day5, part2)]
