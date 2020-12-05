@@ -96,6 +96,23 @@ struct CountryId {
     value: String,
 }
 
+#[derive(Debug, Eq, PartialEq)]
+struct PassString {
+    value: String
+}
+
+#[derive(Debug)]
+pub struct Pass {
+    byr: PassString,
+    iyr: PassString,
+    eyr: PassString,
+    ecl: PassString,
+    hcl: PassString,
+    hgt: PassString,
+    pid: PassString,
+    cid: Option<PassString>,
+}
+
 #[derive(Debug)]
 pub struct Passport {
     byr: Year,
@@ -124,6 +141,112 @@ impl Passport {
         }
         true
     }
+}
+
+fn parse_pass(input: &str) -> IResult<&str, Pass> {
+    let (remaining, (cid, pid, iyr, eyr, byr, ecl, hcl, hgt)) = permutation((
+        pass_field_cid,
+        pass_field_pid,
+        pass_field_iyr,
+        pass_field_eyr,
+        pass_field_byr,
+        pass_field_ecl,
+        pass_field_hcl,
+        pass_field_hgt,
+    ))(input)?;
+
+    Ok((
+        remaining,
+        Pass {
+            iyr,
+            eyr,
+            byr,
+            pid,
+            hcl,
+            ecl,
+            hgt,
+            cid,
+        },
+    ))
+}
+
+fn pass_field_cid(input: &str) -> IResult<&str, Option<PassString>> {
+    if input.is_empty() {
+        return Ok((input, None));
+    }
+    let (remaining, (_, cid)) = separated_pair(tag(CID), char(COLON), pass_field)(input)?;
+    let (remaining, _) = remove_trailing_whitespace(remaining)?;
+    Ok((remaining, Some(cid)))
+}
+
+fn pass_field(input: &str) -> IResult<&str, PassString> {
+    let (remaining, txt) = take_while(is_not_whitespace)(input)?;
+    Ok((
+        remaining,
+        PassString {
+            value: txt.to_owned(),
+        },
+    ))
+}
+
+fn is_not_whitespace(c: char) -> bool {
+    !c.is_whitespace()
+}
+
+fn pass_field_pid(input: &str) -> IResult<&str, PassString> {
+    let (remaining, (_, pid)) = separated_pair(tag(PID), char(COLON), pass_field)(input)?;
+    
+    let (remaining, _) = remove_trailing_whitespace(remaining)?;
+
+    Ok((remaining, pid))
+}
+
+fn pass_field_iyr(input: &str) -> IResult<&str, PassString> {
+    let (remaining, (_, iyr)) = separated_pair(tag(IYR), char(COLON), pass_field)(input)?;
+    
+    let (remaining, _) = remove_trailing_whitespace(remaining)?;
+
+    Ok((remaining, iyr))
+}
+
+fn pass_field_eyr(input: &str) -> IResult<&str, PassString> {
+    let (remaining, (_, eyr)) = separated_pair(tag(EYR), char(COLON), pass_field)(input)?;
+    
+    let (remaining, _) = remove_trailing_whitespace(remaining)?;
+
+    Ok((remaining, eyr))
+}
+
+fn pass_field_byr(input: &str) -> IResult<&str, PassString> {
+    let (remaining, (_, byr)) = separated_pair(tag(BYR), char(COLON), pass_field)(input)?;
+    
+    let (remaining, _) = remove_trailing_whitespace(remaining)?;
+
+    Ok((remaining, byr))
+}
+
+fn pass_field_ecl(input: &str) -> IResult<&str, PassString> {
+    let (remaining, (_, ecl)) = separated_pair(tag(ECL), char(COLON), pass_field)(input)?;
+    
+    let (remaining, _) = remove_trailing_whitespace(remaining)?;
+
+    Ok((remaining, ecl))
+}
+
+fn pass_field_hcl(input: &str) -> IResult<&str, PassString> {
+    let (remaining, (_, hcl)) = separated_pair(tag(HCL), char(COLON), pass_field)(input)?;
+    
+    let (remaining, _) = remove_trailing_whitespace(remaining)?;
+
+    Ok((remaining, hcl))
+}
+
+fn pass_field_hgt(input: &str) -> IResult<&str, PassString> {
+    let (remaining, (_, hgt)) = separated_pair(tag(HGT), char(COLON), pass_field)(input)?;
+    
+    let (remaining, _) = remove_trailing_whitespace(remaining)?;
+
+    Ok((remaining, hgt))
 }
 
 fn parse_passport(input: &str) -> IResult<&str, Passport> {
@@ -306,9 +429,26 @@ fn remove_trailing_whitespace(input: &str) -> IResult<&str, ()> {
     Ok((remaining, ()))
 }
 
+#[aoc_generator(day4, part1)]
+pub fn input_generator(input: &str) -> Vec<Pass> {
+    let mut lines = vec![];
 
-#[aoc_generator(day4)]
-pub fn input_generator(input: &str) -> Vec<Passport> {
+    for ln in input.split("\n\n") {
+        match parse_pass(ln.trim()) {
+            Ok((_, passport)) => {
+                lines.push(passport);
+            }
+            Err(e) => {
+                // dbg!(&e);
+		// println!("Malformed passport data: {:?}:\n{}\n", e, ln);
+            }
+        }
+    }
+    lines
+}
+
+#[aoc_generator(day4, part2)]
+pub fn input_generator2(input: &str) -> Vec<Passport> {
     let mut lines = vec![];
 
     for ln in input.split("\n\n") {
@@ -326,7 +466,7 @@ pub fn input_generator(input: &str) -> Vec<Passport> {
 }
 
 #[aoc(day4, part1)]
-pub fn p1(input: &[Passport]) -> u32 {
+pub fn p1(input: &[Pass]) -> u32 {
    // dbg!(&input[0]);
    input.len() as u32
 }
