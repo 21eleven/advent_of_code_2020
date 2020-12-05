@@ -1,4 +1,4 @@
-use nom::bytes::complete::{take, tag};
+use nom::bytes::complete::take;
 use nom::character::complete::char;
 use nom::sequence::terminated;
 use nom::multi::many1;
@@ -21,8 +21,7 @@ impl BoardingPass {
 pub fn parse_boarding_pass(input: &str) -> IResult<&str, BoardingPass> {
 
     let (remaining, rowstr) = take(7usize)(input)?;
-    let (remaining, colstr) = take(3usize)(remaining)?;
-    // let (remaining, colstr) = terminated(take(3usize), char(NEWLINE))(remaining)?;
+    let (remaining, colstr) = terminated(take(3usize), char(NEWLINE))(remaining)?;
     let row = u32::from_str_radix(&rowstr.replace('F', "0").replace('B', "1"),2).unwrap();
     let col = u32::from_str_radix(&colstr.replace('L', "0").replace('R', "1"),2).unwrap();
 
@@ -32,27 +31,8 @@ pub fn parse_boarding_pass(input: &str) -> IResult<&str, BoardingPass> {
  
 #[aoc_generator(day5, part1)]
 pub fn input_generator(input: &str) -> Vec<BoardingPass> {
-    // match many1(parse_boarding_pass)(input) {
-    //     Ok((_, passes)) => passes,
-    //     Err(e) => {
-    //         dbg!(e);
-    //         vec![]
-    //     }
-    // }
-    // let mut lines = vec![];
-
-    for ln in input.split("\n") {
-        dbg!(&ln);
-        match parse_boarding_pass(ln.trim()) {
-            Ok((_, pass)) => {
-                lines.push(pass);
-            }
-            Err(e) => {
-                dbg!(e);
-            }
-        }
-    }
-    lines
+    let (_, passes) = many1(parse_boarding_pass)(input).unwrap();
+    passes
 }
 
 #[aoc(day5, part1)]
