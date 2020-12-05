@@ -6,7 +6,7 @@ use nom::IResult;
 
 const NEWLINE: char = '\n';
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct BoardingPass {
     row: u32,
     col: u32,
@@ -35,7 +35,28 @@ pub fn input_generator(input: &str) -> Vec<BoardingPass> {
     passes
 }
 
+// #aoc_generator(day5, part2)]
+// pub fn input_generator2(input: &str) -> Vec<BoardingPass> {
+//     let (_, passes) = many1(parse_boarding_pass)(input).unwrap();
+//     passes
+// }
+
 #[aoc(day5, part1)]
 pub fn p1(input: &[BoardingPass]) -> u32 {
-   input.iter().map(|x| x.id()).fold(0, |a,b| std::cmp::max(a,b)) 
+   input.iter().map(|x| x.id()).max().unwrap()//.fold(0, |a,b| std::cmp::max(a,b)) 
+}
+
+#[aoc(day5, part2)]
+pub fn p2(input: &[BoardingPass]) -> u32 {
+    let mut ids = input.iter().map(|x| x.id()).collect::<Vec<u32>>();
+    ids.sort_unstable();
+    for win in ids.windows(2) {
+        let a = win[0];
+        let b = win[1];
+        if b - a != 1 {
+            println!("No pass between {} and {}",a,b);
+            return a+1
+        }
+    }
+    0
 }
