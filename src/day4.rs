@@ -438,8 +438,7 @@ pub fn input_generator(input: &str) -> Vec<Pass> {
             Ok((_, passport)) => {
                 lines.push(passport);
             }
-            Err(e) => {
-                // dbg!(&e);
+            Err(_e) => {
 		// println!("Malformed passport data: {:?}:\n{}\n", e, ln);
             }
         }
@@ -456,8 +455,7 @@ pub fn input_generator2(input: &str) -> Vec<Passport> {
             Ok((_, passport)) => {
                 lines.push(passport);
             }
-            Err(e) => {
-                // dbg!(&e);
+            Err(_e) => {
 		// println!("Malformed passport data: {:?}:\n{}\n", e, ln);
             }
         }
