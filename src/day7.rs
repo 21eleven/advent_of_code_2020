@@ -69,7 +69,16 @@ pub fn p1(input: &[Rule]) -> u32 {
     bags.len() as u32 - 1
 }
 
-// #[aoc(day7, part2)]
-// pub fn p2(input: &[Rule]) -> u32 {
-    
-// }
+#[aoc(day7, part2)]
+pub fn p2(input: &[Rule]) -> u32 {
+    let has = input.iter().map(|x| (x.bag.clone(), x.contains.clone())).collect::<HashMap<String, Vec<(u32, String)>>>();
+    fn dfs(color: &String, has: &HashMap<String, Vec<(u32, String)>>) -> u32 {
+        let mut bag_count = 1;
+        let contents = has.get(color).unwrap();
+        for (count, bag_color) in contents {
+            bag_count += count * dfs(bag_color, has);
+        }
+        bag_count
+    }
+    dfs(&String::from("shiny gold"), &has) - 1
+}
