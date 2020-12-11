@@ -18,12 +18,30 @@ pub fn p1(input: &[u64]) -> usize {
     diffs.iter().filter(|x| x==&&3).count()
 }
 
-// #[aoc(day10, part2)]
-// pub fn p2(input: &[u64]) -> usize {
-//     let mut memo: HashMap<u64, u64> = HashMap::new(); 
-//     let target = input.iter().max().unwrap();
-//     let seen = input.iter().map(|x| *x).collect::<HashSet<u64>>();
-//     fn dp(pos: u64, target: u64, seen: &HashSet<64>, memo: &mut Hash)
-// }
+#[aoc(day10, part2)]
+pub fn p2(input: &[u64]) -> u64 {
+    let mut memo: HashMap<u64, u64> = HashMap::new(); 
+    let target = *input.iter().max().unwrap();
+    let seen = input.iter().map(|x| *x).collect::<HashSet<u64>>();
+    fn dp(pos: u64, target: u64, seen: &HashSet<u64>, memo: &mut HashMap<u64, u64>) -> u64 {
+        if let Some(n) = memo.get(&pos) {
+            *n
+        } else if pos == target {
+            memo.insert(pos,1);
+            1
+        } else {
+            let mut ways = 0;
+            for x in 1..=3 {
+                if seen.contains(&(pos+x)) {
+                    ways += dp(pos+x, target, seen, memo)
+                }
+            }
+            memo.insert(pos, ways);
+            ways
+        }
+
+    }
+    dp(0, target, &seen, &mut memo)
+}
 
 
