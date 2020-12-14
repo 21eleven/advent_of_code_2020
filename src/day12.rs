@@ -80,3 +80,48 @@ pub fn p1(input: &[(char, i32)]) -> i32 {
     }
     x.abs()+y.abs()
 }
+
+fn l(wx: &mut i32, wy: &mut i32) {
+    *wx ^= *wy;
+    *wy ^= *wx;
+    *wx ^= *wy;
+    *wx *= -1;
+}
+
+fn r(wx: &mut i32, wy: &mut i32) {
+    *wx ^= *wy;
+    *wy ^= *wx;
+    *wx ^= *wy;
+    *wy *= -1;
+}
+
+fn follow_waypoint(val: i32, x: &mut i32, y: &mut i32, wx: &i32, wy: &i32) {
+    *x += *wx * val;
+    *y += *wy * val;
+}
+
+#[aoc(day12, part2)]
+pub fn p2(input: &[(char, i32)]) -> i32 {
+    let mut x = 0;
+    let mut y = 0;
+    let mut wx = 10;
+    let mut wy = 1;
+    
+    for (c, val) in input {
+        match c {
+            'F' => follow_waypoint(*val, &mut x, &mut y, &wx, &wy),
+            'R' => {
+                for _ in 0..*val/90 {
+                    r(&mut wx, &mut wy);
+                }
+            }, 
+            'L' => {
+                for _ in 0..*val/90 {
+                    l(&mut wx, &mut wy);
+                }
+            }, 
+            _ => go(c, *val, &mut wx, &mut wy),
+        }
+    }
+    x.abs()+y.abs()
+}
